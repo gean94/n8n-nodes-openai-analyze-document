@@ -1,0 +1,37 @@
+{
+    "name": "n8n-nodes-openai-analyze-document",
+    "version": "1.0.0",
+    "description": "n8n node to analyze documents using OpenAI Vision models",
+    "keywords": [
+        "n8n-community-node-package"
+    ],
+    "license": "MIT",
+    "engines": {
+        "node": ">=18.0.0",
+        "npm": ">=9.0.0"
+    },
+    "scripts": {
+        "build": "tsc && copyfiles \"nodes/**/*.{png,svg}\" \"credentials/**/*.{png,svg}\" dist/",
+        "prepublishOnly": "npm run build"
+    },
+    "main": "dist/index.js",
+    "n8n": {
+        "credentials": [
+            "dist/credentials/OpenAiApi.credentials.js"
+        ],
+        "nodes": [
+            "dist/nodes/OpenAiDocument/OpenAiDocument.node.js"
+        ]
+    },
+    "devDependencies": {
+        "@types/node": "^18.16.0",
+        "copyfiles": "^2.4.1",
+        "n8n-workflow": "^1.0.0",
+        "typescript": "^5.9.3"
+    },
+    "dependencies": {
+        "axios": "^1.6.0",
+        "openai": "^6.22.0",
+        "pdf-to-png-converter": "^3.4.4"
+    }
+}
