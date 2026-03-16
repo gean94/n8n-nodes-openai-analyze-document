@@ -12,9 +12,19 @@
     },
     "scripts": {
         "build": "tsc && copyfiles \"nodes/**/*.{png,svg}\" \"credentials/**/*.{png,svg}\" dist/",
-        "prepublishOnly": "npm run build"
+        "prepublishOnly": "npm run build",
+        "release:patch": "npm version patch -m \"release: %s\" && npm publish --access public",
+        "release:minor": "npm version minor -m \"release: %s\" && npm publish --access public",
+        "release:major": "npm version major -m \"release: %s\" && npm publish --access public"
     },
     "main": "dist/index.js",
+    "files": [
+        "dist",
+        "README.md"
+    ],
+    "publishConfig": {
+        "access": "public"
+    },
     "n8n": {
         "credentials": [
             "dist/credentials/OpenAiApi.credentials.js"
