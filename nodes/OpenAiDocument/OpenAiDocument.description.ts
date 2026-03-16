@@ -6,7 +6,7 @@ export const description: INodeTypeDescription = {
     icon: 'file:icons/openai.svg',
     group: ['transform'],
     version: 1,
-    description: 'Analyze documents using OpenAI Vision models',
+    description: 'Analyze PDF documents using OpenAI Vision models',
     defaults: {
         name: 'OpenAI Document AI - GS',
     },
@@ -14,7 +14,7 @@ export const description: INodeTypeDescription = {
     outputs: ['main'],
     credentials: [
         {
-            name: 'openAiApi',
+            name: 'openAiApiGs',
             required: true,
         },
     ],
@@ -26,19 +26,13 @@ export const description: INodeTypeDescription = {
             noDataExpression: true,
             options: [
                 {
-                    name: 'Analyze Document',
-                    value: 'analyzeDocument',
-                    description: 'Convert PDF to images and analyze each page',
-                    action: 'Analyze a document',
-                },
-                {
-                    name: 'Analyze Image',
-                    value: 'analyzeImage',
-                    description: 'Analyze an image from binary data, URL or Base64',
-                    action: 'Analyze an image',
+                    name: 'Analyze PDF',
+                    value: 'analyzePdf',
+                    description: 'Analyze a PDF document',
+                    action: 'Analyze a PDF',
                 },
             ],
-            default: 'analyzeDocument',
+            default: 'analyzePdf',
         },
         {
             displayName: 'Model',
@@ -59,7 +53,7 @@ export const description: INodeTypeDescription = {
                 rows: 4,
             },
             default: '',
-            description: 'Specific instructions for the AI on what to look for in the document/image',
+            description: 'Specific instructions for the AI on what to extract from the PDF',
         },
         {
             displayName: 'Input Type',
@@ -75,7 +69,7 @@ export const description: INodeTypeDescription = {
                     value: 'url',
                 },
                 {
-                    name: 'Base64 (Text)',
+                    name: 'Base64 (PDF)',
                     value: 'text',
                 },
             ],
@@ -91,7 +85,7 @@ export const description: INodeTypeDescription = {
                     inputType: ['binary'],
                 },
             },
-            description: 'Name of the binary property that contains the file',
+            description: 'Name of the binary property that contains the PDF file',
         },
         {
             displayName: 'URL',
@@ -103,7 +97,7 @@ export const description: INodeTypeDescription = {
                     inputType: ['url'],
                 },
             },
-            description: 'URL of the image or PDF to analyze',
+            description: 'URL of the PDF to analyze',
         },
         {
             displayName: 'Base64 Data',
@@ -115,7 +109,7 @@ export const description: INodeTypeDescription = {
                     inputType: ['text'],
                 },
             },
-            description: 'Base64 encoded string of the PDF or image',
+            description: 'Base64 encoded string of the PDF',
         },
     ],
 };

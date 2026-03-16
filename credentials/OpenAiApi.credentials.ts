@@ -1,8 +1,9 @@
 import { ICredentialType, INodeProperties } from 'n8n-workflow';
 
 export class OpenAiApi implements ICredentialType {
-    name = 'openAiApi';
-    displayName = 'OpenAI API';
+    // Use a unique credential name to avoid conflicts with built-in OpenAI creds
+    name = 'openAiApiGs';
+    displayName = 'OpenAI API (GS)';
     documentationUrl = 'https://platform.openai.com/docs/api-reference';
     properties: INodeProperties[] = [
         {

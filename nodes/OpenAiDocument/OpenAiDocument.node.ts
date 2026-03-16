@@ -27,7 +27,7 @@ export class OpenAiDocument implements INodeType {
     methods = {
         loadOptions: {
             async getModels(this: ILoadOptionsFunctions): Promise<INodePropertyOptions[]> {
-                const credentials = await this.getCredentials('openAiApi');
+                const credentials = await this.getCredentials('openAiApiGs');
                 const apiKey = credentials.apiKey as string;
 
                 const response = await axios.get('https://api.openai.com/v1/models', {
@@ -49,7 +49,7 @@ export class OpenAiDocument implements INodeType {
     async execute(this: IExecuteFunctions): Promise<INodeExecutionData[][]> {
         const items = this.getInputData();
         const returnData: INodeExecutionData[] = [];
-        const credentials = await this.getCredentials('openAiApi');
+        const credentials = await this.getCredentials('openAiApiGs');
         const apiKey = credentials.apiKey as string;
 
         for (let i = 0; i < items.length; i++) {
@@ -58,31 +58,45 @@ export class OpenAiDocument implements INodeType {
                 const userPrompt = this.getNodeParameter('userPrompt', i) as string;
                 const inputType = this.getNodeParameter('inputType', i) as string;
 
-                let pdfBase64: string;
+                let fileBuffer: Buffer;
                 let filename = "document.pdf";
 
                 // ==========================
-                // Obtener PDF
+                // Obtener y validar PDF
                 // ==========================
                 if (inputType === 'binary') {
                     const binaryPropertyName = this.getNodeParameter('binaryPropertyName', i) as string;
-                    const buffer = await this.helpers.getBinaryDataBuffer(i, binaryPropertyName);
-
-                    pdfBase64 = buffer.toString('base64');
-
+                    fileBuffer = await this.helpers.getBinaryDataBuffer(i, binaryPropertyName);
                     const binaryData = items[i].binary?.[binaryPropertyName];
                     if (binaryData?.fileName) {
                         filename = binaryData.fileName;
                     }
-
                 } else if (inputType === 'url') {
                     const url = this.getNodeParameter('url', i) as string;
-                    const response = await axios.get(url, { responseType: 'arraybuffer' });
-                    pdfBase64 = Buffer.from(response.data).toString('base64');
-
+                    const resp = await axios.get(url, { responseType: 'arraybuffer' });
+                    fileBuffer = Buffer.from(resp.data);
+                    // Try to infer filename from URL
+                    try {
+                        const u = new URL(url);
+                        const pathname = u.pathname.split('/').pop();
+                        if (pathname) filename = pathname;
+                    } catch {}
                 } else {
-                    pdfBase64 = this.getNodeParameter('base64Data', i) as string;
+                    let base64Data = this.getNodeParameter('base64Data', i) as string;
+                    const commaIdx = base64Data.indexOf(',');
+                    if (base64Data.startsWith('data:') && commaIdx !== -1) {
+                        base64Data = base64Data.slice(commaIdx + 1);
+                    }
+                    fileBuffer = Buffer.from(base64Data, 'base64');
                 }
+
+                // Validate PDF header (%PDF)
+                const header = fileBuffer.slice(0, 4).toString('ascii');
+                if (header !== '%PDF') {
+                    throw new Error('Only PDF files are supported. The provided input is not a valid PDF.');
+                }
+
+                const pdfBase64 = fileBuffer.toString('base64');
 
                 // ==========================
                 // Construir Prompt

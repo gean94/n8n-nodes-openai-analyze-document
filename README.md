@@ -1,9 +1,9 @@
 # n8n-nodes-openai-analyze-document
 
-Nodo comunitario de n8n para analizar documentos (PDF e imágenes) usando modelos de visión de OpenAI a través del endpoint `responses`. Permite enviar un PDF completo (como archivo binario, URL o Base64) y obtener como salida un objeto JSON con campos clave extraídos.
+Nodo comunitario de n8n para analizar exclusivamente documentos PDF usando modelos de visión de OpenAI a través del endpoint `responses`. Permite enviar un PDF completo (como archivo binario, URL o Base64) y obtener como salida un objeto JSON con campos clave extraídos.
 
 ## Características
-- Analiza PDF completo (conversión interna a Base64) o imágenes.
+- Analiza exclusivamente PDF (conversión interna a Base64).
 - Carga dinámica de modelos desde OpenAI (requiere API Key).
 - Prompt personalizado para guiar la extracción.
 - Salida JSON estructurada.
@@ -29,14 +29,13 @@ npm run build
 - Apunta n8n a tu carpeta compilada `dist/` (o empaqueta y publica en un registro privado si lo deseas).
 
 ## Configurar credenciales
-- En n8n, crea una credencial de tipo "OpenAI API" y pega tu API Key.
+- En n8n, crea una credencial de tipo "OpenAI API (GS)" y pega tu API Key.
 - El nodo usará esta credencial para listar modelos y realizar las solicitudes al endpoint de OpenAI.
 
 ## Uso dentro de un flujo
 1. Añade el nodo "OpenAI Document AI - GS" a tu flujo.
 2. Elige la Operación:
-   - Analyze Document: envía un PDF (binario, URL o Base64).
-   - Analyze Image: envía una imagen (binario, URL o Base64).
+  - Analyze PDF: envía un PDF (binario, URL o Base64).
 3. Selecciona el `Model` (se carga de OpenAI usando tu API Key). Recomendado: `gpt-4o` o `gpt-4o-mini` para tareas de visión.
 4. Escribe el `User Prompt` con instrucciones claras y exige salida en JSON válido exclusivamente con el esquema esperado. Ejemplo de prompt:
 
@@ -52,19 +51,19 @@ Extrae los siguientes datos y responde SOLO con JSON válido sin texto adicional
 Si algún dato no está presente, usa null.
 ```
 
-5. Define el `Input Type` según tu fuente:
-   - Binary: indica el nombre del campo binario (por defecto `data`).
-   - URL: proporciona un enlace directo a PDF/imagen.
-   - Base64 (Text): pega el contenido en Base64 (PDF o imagen).
+5. Define el `Input Type` según tu fuente (solo PDF):
+  - Binary: indica el nombre del campo binario (por defecto `data`).
+  - URL: proporciona un enlace directo a un PDF.
+  - Base64 (PDF): pega el contenido en Base64 (se acepta también formato `data:application/pdf;base64,...`).
 
 ## Salida
-- El nodo devuelve en `items[x].json` el objeto JSON parseado. Si el modelo responde con texto no JSON o formato inválido, el nodo fallará (o devolverá el error en `continueOnFail`).
+- El nodo devuelve en `items[x].json` el objeto JSON parseado. Si el modelo responde con texto no JSON o formato inválido, el nodo fallará (o devolverá el error en `continueOnFail`). Si el archivo no es un PDF válido, el nodo fallará indicando que solo se aceptan PDFs.
 
 ## Desarrollo
 - Compilación: `npm run build` (usa TypeScript y copia íconos a `dist/`).
 - Estructura clave:
-  - `credentials/OpenAiApi.credentials.ts`: credencial con `apiKey`.
-  - `nodes/OpenAiDocument/*`: descripción y lógica del nodo.
+  - `credentials/OpenAiApi.credentials.ts`: credencial con `apiKey` (id: `openAiApiGs`, nombre visible: `OpenAI API (GS)`).
+  - `nodes/OpenAiDocument/*`: descripción y lógica del nodo (solo PDF).
   - `index.ts`: punto de entrada del paquete n8n.
 
 ## Buenas prácticas para el prompt
