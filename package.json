@@ -1,6 +1,6 @@
 {
     "name": "n8n-nodes-openai-analyze-document",
-    "version": "1.0.0",
+    "version": "1.0.1",
     "description": "n8n node to analyze documents using OpenAI Vision models",
     "keywords": [
         "n8n-community-node-package"
