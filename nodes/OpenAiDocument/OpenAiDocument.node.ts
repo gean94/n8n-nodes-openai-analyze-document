@@ -8,6 +8,7 @@ import {
 } from 'n8n-workflow';
 
 import { description } from './OpenAiDocument.description';
+import { createHash } from 'crypto';
 import axios from 'axios';
 
 interface DocumentAnalysisResult {
@@ -99,6 +100,11 @@ export class OpenAiDocument implements INodeType {
                 const pdfBase64 = fileBuffer.toString('base64');
 
                 // ==========================
+                // Generar ID único del documento (MD5 del base64)
+                // ==========================
+                const documentId = createHash('md5').update(pdfBase64).digest('hex');
+
+                // ==========================
                 // Construir Prompt
                 // ==========================
                 const fullPrompt = `${userPrompt}`;
@@ -157,7 +163,10 @@ export class OpenAiDocument implements INodeType {
                 }
 
                 returnData.push({
-                    json: parsed as unknown as { [key: string]: any }
+                    json: {
+                        documentId,
+                        responseModel: parsed as unknown as { [key: string]: any },
+                    },
                 });
 
             } catch (error: any) {

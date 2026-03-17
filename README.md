@@ -57,7 +57,11 @@ Si algún dato no está presente, usa null.
   - Base64 (PDF): pega el contenido en Base64 (se acepta también formato `data:application/pdf;base64,...`).
 
 ## Salida
-- El nodo devuelve en `items[x].json` el objeto JSON parseado. Si el modelo responde con texto no JSON o formato inválido, el nodo fallará (o devolverá el error en `continueOnFail`). Si el archivo no es un PDF válido, el nodo fallará indicando que solo se aceptan PDFs.
+- El nodo devuelve en `items[x].json`:
+  - `documentId`: hash MD5 del contenido Base64 del PDF (identificador único del documento).
+  - `responseModel`: el JSON parseado devuelto por el modelo.
+
+  Si el modelo responde con texto no JSON o formato inválido, el nodo fallará (o devolverá el error en `continueOnFail`). Si el archivo no es un PDF válido, el nodo fallará indicando que solo se aceptan PDFs.
 
 ## Desarrollo
 - Compilación: `npm run build` (usa TypeScript y copia íconos a `dist/`).
